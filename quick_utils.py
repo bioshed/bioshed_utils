@@ -155,7 +155,7 @@ def get_request( args ):
 
     response = requests.get(myurl, headers=headers)
     if apptype == 'application/json':
-        return json.dump( response.json() )
+        return response.json()
     else:
         return response
 
