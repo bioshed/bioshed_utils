@@ -141,3 +141,21 @@ def add_to_json( fname, jsonadd ):
     for k in jsonadd:
         jsonog[k] = jsonadd[k]
     return writeJSON( jsonog, fname )
+
+def get_request( args ):
+    """ HTTP GET request.
+    url: URL to GET
+    type: application type - default: */*. Options include 'application/json'...
+    ---
+    response
+    """
+    myurl = args['url']
+    apptype = args['type'] if 'type' in args else '*/*'
+    headers = {'accept': apptype}
+
+    response = requests.get(myurl, headers=headers)
+    if apptype == 'application/json':
+        return json.dump( response.json() )
+    else:
+        return response
+
