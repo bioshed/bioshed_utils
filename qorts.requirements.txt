@@ -1,0 +1,4 @@
+jre
+install.packages("http://hartleys.github.io/QoRTs/QoRTs_STABLE.tar.gz", repos=NULL, type="source")
+QoRTs.jar
+qortsGenMultiQC.R

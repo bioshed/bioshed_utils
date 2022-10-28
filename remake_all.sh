@@ -20,6 +20,7 @@
 ./remake.sh samtools
 ./remake.sh seurat
 ./remake.sh star
+./remake.sh test
 ./remake.sh tar
 ./remake.sh varscan2
 ./remake.sh zcat

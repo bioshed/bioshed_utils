@@ -1,0 +1,3 @@
+wget https://github.com/alexdobin/STAR/archive/2.7.10a.tar.gz
+PATH="/STAR-2.7.10a/bin/Linux_x86_64/"
+alias star='STAR'

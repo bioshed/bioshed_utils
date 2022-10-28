@@ -148,6 +148,8 @@ def run_program( args ):
         logfile = args['logfile']
 
         subprocess.call(cmd+' > {}'.format(logfile), shell=True)
+        if len(cmd.split(' ')) <= 1:
+            subprocess.call(cmd+' --help', shell=True)
         return
     except:
         print('Error in running program: '+str(cmd))
