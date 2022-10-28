@@ -118,6 +118,41 @@ def get_aws_id():
     return boto3.client("sts").get_caller_identity()["Account"]
 
 
+def transfer_file_s3( args ):
+    """ Transfers object(s) from one S3 path to another S3 folder.
+
+    path: S3 file path(s), STR or LIST
+    outpath: S3 output path. Must be a folder, not a file extension.
+    ---
+    outfiles: S3 path of all output files, STR or LIST
+
+    >>> transfer_file_s3( dict(path='s3://hubscratch/test.R', outpath='s3://hubscratch2/'))
+    Transfering from s3://hubscratch/test.R to s3://hubscratch2/
+    copy: s3://hubscratch/test.R to s3://hubscratch2/test.R
+    's3://hubscratch2/test.R'
+
+    [TODO] try except for subprocess
+    """
+    s3path = args['path']
+    outpath = args['outpath']
+    return_type = type(s3path)
+
+    s3path = quick_utils.format_type(s3path, 'list')
+    outfiles = []
+
+    for s3p in s3path:
+        if s3p.startswith('s3://'):
+            print('Transfering from {} to {}'.format(s3p, outpath))
+            cmd = ['aws','s3','cp',s3p,outpath]
+            subprocess.call(cmd)
+            outfiles.append(os.path.join(outpath,quick_utils.get_file_only(s3p)))
+        else:
+            print('{} needs to start with S3'.format(s3p))
+    
+    if return_type == type(''):
+        outfiles = quick_utils.format_type(outfiles, 'str')
+    return outfiles
+
 def download_file_s3( args ):
     """ Downloads object(s) from S3 to a local file.
         Can be used to download multiple objects if list or comma-delim str is provided.
