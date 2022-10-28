@@ -10,8 +10,8 @@ AWS_CONFIG = quick_utils.loadJSON(os.path.join(HOME_PATH,'.bioshedinit/','aws_co
 
 # initialize S3 access
 if os.environ.get('AWS_ACCESS_KEY_ID') not in [None, ''] and os.environ.get('AWS_SECRET_ACCESS_KEY') not in [None, '']:
-    if not os.path.exists(os.path.join(str(os.environ.get('HOME')), '.aws')):
-        os.mkdir(os.path.join(str(os.environ.get('HOME')), '.aws'))
+    if not os.path.exists(os.path.join(str(os.environ.get('HOME')), '.aws/')):
+        os.mkdir(os.path.join(str(os.environ.get('HOME')), '.aws/'))
     if not os.path.exists(os.path.join(str(os.environ.get('HOME')), '.aws/credentials')):
         with open(os.path.join(str(os.environ.get('HOME')), '.aws/credentials'),'w') as f:
             f.write('[default]\naws_access_key_id = {}\naws_secret_access_key = {}\n'.format(str(os.environ.get('AWS_ACCESS_KEY_ID')), str(os.environ.get('AWS_SECRET_ACCESS_KEY'))))
