@@ -159,3 +159,21 @@ def get_request( args ):
     else:
         return response
 
+def post_request( args ):
+    """ HTTP POST request.
+    url: URL to POST to (required)
+    headers: headers (optional)
+    body: body
+    ---
+    response
+    """
+    myurl = args['url']
+    headers = args['headers'] if 'headers' in args else {}
+    body = args['body'] if 'body' in args else {}
+
+    if headers != {}:
+        response = requests.post(myurl, json=body, headers=headers)
+    else:
+        response = requests.post(myurl, json=body)       
+    return json.loads(response.content)
+
