@@ -37,7 +37,7 @@ def init_program( args ):
     pargs_all = []
     pargs_formatted = []
     for parg in pargs:
-        if not parg.startswith('out://') and not parg.startswith('arg://') and parg.strip(' ')!='//':
+        if not parg.startswith('out::') and not parg.startswith('arg://') and parg.strip(' ')!='//':
             pargs_formatted.append(parg)
         elif parg.strip(' ')=='//' and pargs_formatted != []:
             # user passed multiple commands
@@ -73,8 +73,8 @@ def get_remote_outputdir( args ):
     for parg in pargs:
         if parg.startswith(cloud_prefix):
             remote_alt = quick_utils.get_file_folder(parg)
-        elif parg.startswith('out://'):
-            remote_explicit = parg[6:]
+        elif parg.startswith('out::'):
+            remote_explicit = parg[5:]
     return remote_explicit if remote_explicit!='' else remote_alt
 
 def get_alternate_inputs( args ):
@@ -89,8 +89,8 @@ def get_alternate_inputs( args ):
     localdir = args['localdir'] if 'localdir' in args else '/hubinput/'
     alt_files = ''
     for parg in pargs:
-        if parg.startswith('alt://'):
-            alt_files += parg[6:]+' '
+        if parg.startswith('alt::'):
+            alt_files += parg[5:]+' '
     alt_files_local = download_files( dict(program_args=alt_files.strip(), localdir=localdir))
     return alt_files_local
 
