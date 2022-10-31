@@ -122,6 +122,7 @@ def transfer_file_s3( args ):
 
     path: S3 file path(s), STR or LIST
     outpath: S3 output path. Must be a folder, not a file extension.
+    overwrite: 'True'/'False' Overwrite if file exists
     ---
     outfiles: S3 path of all output files, STR or LIST
 
@@ -134,6 +135,7 @@ def transfer_file_s3( args ):
     """
     s3path = args['path']
     outpath = args['outpath']
+    overwrite = args['overwrite'] if 'overwrite' in args else 'True'
     return_type = type(s3path)
 
     s3path = quick_utils.format_type(s3path, 'list')
@@ -141,9 +143,10 @@ def transfer_file_s3( args ):
 
     for s3p in s3path:
         if s3p.startswith('s3://'):
-            print('Transfering from {} to {}'.format(s3p, outpath))
-            cmd = ['aws','s3','cp',s3p,outpath]
-            subprocess.call(cmd)
+            if overwrite == 'True' or (overwrite=='False' and not file_exists_s3(s3p)):
+                print('Transfering from {} to {}'.format(s3p, outpath))
+                cmd = ['aws','s3','cp',s3p,outpath]
+                subprocess.call(cmd)
             outfiles.append(os.path.join(outpath,quick_utils.get_file_only(s3p)))
         else:
             print('{} needs to start with S3'.format(s3p))
@@ -159,6 +162,7 @@ def download_file_s3( args ):
 
     path: S3 file path, s3://bioshed/myfile.bam, STR
     localdir: local directory to download to, /local/dir, STR
+    overwrite: 'True'/'False' overwrite existing files (default 'True')
     ---
     localpath: (RETURN) full path of downloaded local file, e.g. '/local/dir/myfile.bam'
         - return type is same as input path type
@@ -180,6 +184,7 @@ def download_file_s3( args ):
     """
     s3path = args['path']
     localdir = args['localdir']
+    overwrite = args['overwrite'] if 'overwrite' in args else 'True'
     return_type = type(s3path)
 
     s3path = quick_utils.format_type(s3path, 'list')
@@ -187,14 +192,15 @@ def download_file_s3( args ):
 
     for s3p in s3path:
         if s3p.startswith('s3://'):
-            print('Downloading from S3 - {} to {}'.format(s3p, localdir))
             bucket = s3p.split('/')[2]
             key = '/'.join(s3p.split('/')[3:])
 
             object_filename = key.split('/')[-1]
             local_filename = os.path.join(localdir, object_filename)
 
-            s3.Object(bucket,key).download_file(local_filename)
+            if overwrite == 'True' or (overwrite=='False' and not file_exists_s3(s3p)):
+                print('Downloading from S3 - {} to {}'.format(s3p, localdir))
+                s3.Object(bucket,key).download_file(local_filename)
             localpath.append(local_filename)
         else:
             print('{} needs to start with S3'.format(s3p))
