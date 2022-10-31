@@ -826,10 +826,16 @@ def list_objects( s3path, searchpattern = '' ):
                  else quick_utils.loadJSON(os.path.join(SCRIPT_DIR,'aws_config_constants.json'))
 
     bucket = s3path.split('/')[2]
-    key = str('/'.join(s3path.split('/')[3:])).rstrip('/') + '/'
     region = AWS_CONFIG['aws_region']
     # s3_endpoint = '{}.s3.{}.amazonaws.com/{}'.format(bucket,region,key)
-    response = s3_client.list_objects_v2( Bucket=bucket, Prefix=key, Delimiter='/', StartAfter=key )
+    if '.' in s3path.split('/')[-1] or len(s3path.rstrip('/').split('/')) < 4:
+        # searching for file
+        key = str('/'.join(s3path.split('/')[3:])).rstrip('/')
+        response = s3_client.list_objects_v2( Bucket=bucket, Prefix=key, Delimiter='/')
+    else:
+        # searching within a folder
+        key = str('/'.join(s3path.split('/')[3:])).rstrip('/') + '/'
+        response = s3_client.list_objects_v2( Bucket=bucket, Prefix=key, Delimiter='/', StartAfter=key )
     ## narrow down file list if we are searching for a specific file pattern
     if searchpattern != '' and "Contents" in response:
         return _filter_list_objects_response( response, searchpattern )
@@ -871,3 +877,17 @@ def listSubFolders(s3_path, folders2include = [], folders2exclude = [], options 
         return dfolders
     except subprocess.CalledProcessError:
         return []
+
+def file_exists_s3( f ):
+    """ Check if a file exists in S3
+
+    >>> file_exists_s3( "s3://www.bioshed.io/index.html" )
+    True
+    >>> file_exists_s3( "s3://www.bioshed.io/index.blah" )
+    False
+    """
+    objects = list_objects( f )
+    if "Contents" in objects and len(objects["Contents"]) > 0:
+        return True
+    else:
+        return False

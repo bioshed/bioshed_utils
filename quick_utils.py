@@ -179,3 +179,11 @@ def post_request( args ):
     else:
         response = requests.post(myurl, json=body)
     return json.loads(response.content)
+
+def file_exists( f ):
+    """ Check if a file exists in local system
+    """
+    if os.path.exists( f ):
+        return True
+    else:
+        return False
