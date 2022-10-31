@@ -10,7 +10,7 @@ def format_type( foo, ftype ):
     if (foo=='' and ftype.lower() in ['list','array']):
         modfoo = []
     elif (type(foo)==type([]) and ftype.lower() in ['space-str', 'space_string', 'string_space']):
-        modfoo = ' '.join(foo)        
+        modfoo = ' '.join(foo)
     elif (type(foo)==type([]) and ftype.lower() in ['list','array']) or \
        (type(foo)==type('') and ftype.lower()[0:3]=='str'):
         modfoo = foo
@@ -137,7 +137,10 @@ def loadJSON( fname ):
     return myjson
 
 def add_to_json( fname, jsonadd ):
-    jsonog = loadJSON( fname )
+    if os.path.exists(fname):
+        jsonog = loadJSON( fname )
+    else:
+        jsonog = {}
     for k in jsonadd:
         jsonog[k] = jsonadd[k]
     return writeJSON( jsonog, fname )
@@ -174,6 +177,5 @@ def post_request( args ):
     if headers != {}:
         response = requests.post(myurl, json=body, headers=headers)
     else:
-        response = requests.post(myurl, json=body)       
+        response = requests.post(myurl, json=body)
     return json.loads(response.content)
-

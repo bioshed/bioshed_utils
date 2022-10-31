@@ -1,5 +1,8 @@
 import os, subprocess, sys
 from datetime import datetime
+SCRIPT_DIR = str(os.path.dirname(os.path.realpath(__file__)))
+
+sys.path.append(SCRIPT_DIR)
 import program_utils
 import file_utils
 
@@ -12,11 +15,11 @@ def run_main( pargs ):
 
     # initialize program run - create input and output directories, format program arguments, etc
     params = program_utils.init_program( dict(program_args=pargs))
-    
+
     # download any cloud files
     pargs_list_updated = program_utils.download_files( dict(program_args=params['program_args'], localdir=params['inputdir']))
     print('Program arguments after download: {}'.format(str(pargs_list_updated)))
-    
+
     # run main program - run within output directory
     os.chdir(params['outputdir'])
     program_log_name_list = []
@@ -26,7 +29,7 @@ def run_main( pargs ):
         program_utils.run_program( dict(command=pargs_updated, logfile=program_log_name ))
         program_log_name_list.append(program_log_name)
         cmd_order += 1
-    
+
     # create run log that includes program run duration
     run_end = datetime.now()
     run_log_name = os.path.join(params['outputdir'], 'run.{}.log'.format(str(run_start_string)))

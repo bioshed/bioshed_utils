@@ -1,4 +1,7 @@
 import sys, os, subprocess, json
+SCRIPT_DIR = str(os.path.dirname(os.path.realpath(__file__)))
+
+sys.path.append(SCRIPT_DIR)
 import aws_s3_utils
 import quick_utils
 

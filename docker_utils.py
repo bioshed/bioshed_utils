@@ -1,17 +1,15 @@
 import sys, os, yaml, json, subprocess
 from pathlib import Path
-# from decouple import config # pip install python-decouple
+SCRIPT_DIR = str(os.path.dirname(os.path.realpath(__file__)))
+
+sys.path.append(SCRIPT_DIR)
 import aws_batch_utils
 import quick_utils
 import file_utils
 
-SCRIPT_DIR = str(os.path.dirname(os.path.realpath(__file__)))
 PKG = yaml.safe_load(Path(os.path.join(SCRIPT_DIR, 'packages.yaml')).read_text())
 HOME_PATH = os.path.expanduser('~')
-AWS_CONFIG = quick_utils.loadJSON(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
-             if os.path.exists(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
-             else quick_utils.loadJSON(os.path.join(SCRIPT_DIR,'aws_config_constants.json'))
-CONTAINER_REGISTRY_URL = AWS_CONFIG['ecr_registry']
+DEFAULT_REGISTRY = "public.ecr.aws/w7q0j5w1"
 UTILS = ['program_utils.py', 'file_utils.py', 'aws_s3_utils.py', 'quick_utils.py', 'aws_config_constants.json', 'specs.json']
 
 def run_container_local( args ):
@@ -30,6 +28,11 @@ def run_container_local( args ):
     'sudo docker run test:latest '
 
     """
+    AWS_CONFIG = quick_utils.loadJSON(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
+                 if os.path.exists(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
+                 else quick_utils.loadJSON(os.path.join(SCRIPT_DIR,'aws_config_constants.json'))
+    CONTAINER_REGISTRY_URL = AWS_CONFIG['ecr_registry'] if 'ecr_registry' in AWS_CONFIG else DEFAULT_REGISTRY
+
     # sudo docker run test:latest
     cname = args['name']
     ctag = args['tag'] if 'tag' in args else 'latest'
@@ -151,6 +154,11 @@ def run_makefile( args ):
     >>> run_makefile( dict(name='test'))
     0
     """
+    AWS_CONFIG = quick_utils.loadJSON(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
+                 if os.path.exists(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
+                 else quick_utils.loadJSON(os.path.join(SCRIPT_DIR,'aws_config_constants.json'))
+    CONTAINER_REGISTRY_URL = AWS_CONFIG['ecr_registry'] if 'ecr_registry' in AWS_CONFIG else DEFAULT_REGISTRY
+
     cname = args['name'].lower()
     creg_url = args['url'] if 'url' in args else CONTAINER_REGISTRY_URL
     need_sudo = args['need_sudo'] if 'need_sudo' in args else 'yes'

@@ -1,12 +1,11 @@
 import os, sys, uuid, json, boto3
-import quick_utils
 from datetime import datetime
-
 SCRIPT_DIR = str(os.path.dirname(os.path.realpath(__file__)))
+
+sys.path.append(SCRIPT_DIR)
+import quick_utils
+
 HOME_PATH = os.path.expanduser('~')
-AWS_CONFIG = quick_utils.loadJSON(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
-             if os.path.exists(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
-             else quick_utils.loadJSON(os.path.join(SCRIPT_DIR,'aws_config_constants.json'))
 SPECS_CONFIG = quick_utils.loadJSON(os.path.join(SCRIPT_DIR, 'specs.json'))
 
 def submit_job_awsbatch( args ):
@@ -21,7 +20,11 @@ def submit_job_awsbatch( args ):
     >>> submit_job_awsbatch( dict(name='test', program_args=''))
     0
     """
-    def setJobProperties( module_name, module_version ):
+    AWS_CONFIG = quick_utils.loadJSON(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
+                 if os.path.exists(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
+                 else quick_utils.loadJSON(os.path.join(SCRIPT_DIR,'aws_config_constants.json'))
+
+    def setJobProperties( module_name, module_version, AWS_CONFIG ):
         job_properties = {}
         job_properties['image'] = f"{AWS_CONFIG['ecr_registry']}/{module_name}:{module_version}"
         job_properties['vcpus'] = int(SPECS_CONFIG[module_name]['vcpu']) if (module_name in SPECS_CONFIG and 'vcpu' in SPECS_CONFIG[module_name]) else 1
@@ -55,7 +58,7 @@ def submit_job_awsbatch( args ):
     client = boto3.client('batch', region_name=AWS_CONFIG['aws_region'])
 
     # set properties for this job
-    job_properties = setJobProperties( cname, ctag )
+    job_properties = setJobProperties( cname, ctag, AWS_CONFIG )
     job_name = f'job_{cname}_{uid}'
     print('Setting job properties for job: '+str(job_name))
 

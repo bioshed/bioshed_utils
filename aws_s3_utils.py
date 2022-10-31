@@ -1,12 +1,11 @@
-import os, boto3, subprocess, uuid, json, datetime
+import os, boto3, subprocess, uuid, json, datetime, sys
 from dateutil.tz import *
+SCRIPT_DIR = str(os.path.dirname(os.path.realpath(__file__)))
+
+sys.path.append(SCRIPT_DIR)
 import quick_utils
 
-SCRIPT_DIR = str(os.path.dirname(os.path.realpath(__file__)))
 HOME_PATH = os.path.expanduser('~')
-AWS_CONFIG = quick_utils.loadJSON(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
-             if os.path.exists(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
-             else quick_utils.loadJSON(os.path.join(SCRIPT_DIR,'aws_config_constants.json'))
 
 # initialize S3 access
 if os.environ.get('AWS_ACCESS_KEY_ID') not in [None, ''] and os.environ.get('AWS_SECRET_ACCESS_KEY') not in [None, ''] and os.environ.get('HOME') not in [None, '']:
@@ -148,7 +147,7 @@ def transfer_file_s3( args ):
             outfiles.append(os.path.join(outpath,quick_utils.get_file_only(s3p)))
         else:
             print('{} needs to start with S3'.format(s3p))
-    
+
     if return_type == type(''):
         outfiles = quick_utils.format_type(outfiles, 'str')
     return outfiles
@@ -425,6 +424,10 @@ def get_objects_s3( args ):
     ---
     response: AWS-formatted response containing full metadata for each object
     """
+    AWS_CONFIG = quick_utils.loadJSON(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
+                 if os.path.exists(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
+                 else quick_utils.loadJSON(os.path.join(SCRIPT_DIR,'aws_config_constants.json'))
+
     s3path = args['path']
 
     bucket = s3path.split('/')[2]
@@ -818,6 +821,10 @@ def list_objects( s3path, searchpattern = '' ):
         },...
     ]}
     """
+    AWS_CONFIG = quick_utils.loadJSON(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
+                 if os.path.exists(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
+                 else quick_utils.loadJSON(os.path.join(SCRIPT_DIR,'aws_config_constants.json'))
+
     bucket = s3path.split('/')[2]
     key = str('/'.join(s3path.split('/')[3:])).rstrip('/') + '/'
     region = AWS_CONFIG['aws_region']
