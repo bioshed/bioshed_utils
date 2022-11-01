@@ -16,8 +16,12 @@ def format_type( foo, ftype ):
         modfoo = foo
     elif (type(foo)==type([]) and ftype.lower()[0:3]=='str'):
         modfoo = ','.join(foo)
-    elif (type(foo)==type('') and ftype.lower() in ['list','array']):
+    elif (type(foo)==type('') and ',' in foo and ftype.lower() in ['list','array']):
         modfoo = list(map(lambda x: x.strip(), foo.split(',')))
+    elif (type(foo)==type('') and ftype.lower() in ['list','array']):
+        modfoo = list(map(lambda x: x.strip(), foo.split(' ')))
+    else:
+        modfoo = foo
     return modfoo
 
 def args_to_list( args, delim=','):
