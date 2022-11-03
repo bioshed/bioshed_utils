@@ -44,16 +44,18 @@ def init_program( args ):
     for parg in pargs:
         if not parg.startswith('out::') and not parg.startswith('arg://') and parg.strip(' ')!='//':
             pargs_formatted.append(parg)
-#        elif parg.strip(' ')=='&&' and pargs_formatted != []:
+        elif parg.strip(' ')=='&&' and pargs_formatted != []:
             # user passed multiple commands
-#            pargs_all.append(' '.join(pargs_formatted) )
-#            pargs_formatted = []
+            print('NOTE: You specified multiple commands.')
+            pargs_all.append(' '.join(pargs_formatted) )
+            pargs_formatted = []
     if pargs_formatted != []:
         pargs_all.append( ' '.join(pargs_formatted) )
 
     remote_outputdir = get_remote_outputdir( dict(program_args=pargs))
     alt_inputs = get_alternate_inputs( dict(program_args=pargs, localdir=inputdir))
 
+    print('Raw program arguments: {}'.format(str(pargs_all)))
     params = {}
     params['workingdir'] = cwd.rstrip('/')+'/'
     params['inputdir'] = inputdir
