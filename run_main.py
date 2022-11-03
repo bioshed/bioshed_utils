@@ -22,11 +22,12 @@ def run_main( pargs ):
 
     # run main program - run within output directory
     os.chdir(params['outputdir'])
+    stdout_file = program_utils.create_stdout_file( dict(working_dir=params['outputdir']))
     program_log_name_list = []
     cmd_order = 1
     for pargs_updated in pargs_list_updated:
         program_log_name = os.path.join(params['outputdir'], 'program.{}.{}.{}.log'.format(str(pargs_updated.split(' ')[0]), run_start_string, str(cmd_order)))
-        program_utils.run_program( dict(command=pargs_updated, logfile=program_log_name ))
+        program_utils.run_program( dict(command=pargs_updated, logfile=program_log_name, printfile=stdout_file ))
         program_log_name_list.append(program_log_name)
         cmd_order += 1
 

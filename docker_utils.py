@@ -270,7 +270,7 @@ def specify_output_dir( args ):
     default_dir = args['default_dir'] if 'default_dir' in args else ''
     pargs = quick_utils.format_type(args['program_args'], 'space-str')
     if 'out::' not in pargs and default_dir != '':
-        pargs.strip()+' out::/'+default_dir.lstrip('/')
+        pargs = pargs.strip()+' out::/'+default_dir.lstrip('/')
         return quick_utils.format_type(pargs, 'list')
     else:
         return args['program_args']

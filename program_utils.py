@@ -144,6 +144,7 @@ def run_program( args ):
     """ Runs program on command line.
     command: full command with program args to run (string)
     logfile: run log file name
+    printfile: print (stdout) file
     ---
 
     [TODO] try except for subprocess
@@ -151,10 +152,12 @@ def run_program( args ):
     try:
         cmd = args['command']
         logfile = args['logfile']
-
+        printfile = args['printfile'] if 'printfile' in args else ''
         subprocess.call(cmd+' > {}'.format(logfile), shell=True)
         if len(cmd.split(' ')) <= 1:
             subprocess.call(cmd+' --help', shell=True)
+        if printfile != '':
+            subprocess.call('cat {} >> {}'.format(logfile, printfile))
         return
     except:
         print('Error in running program: '+str(cmd))
@@ -189,3 +192,15 @@ def upload_output( args ):
     """
     out = aws_s3_utils.upload_folder_s3( dict(localfolder=args['local_outputdir'], path=args['remote_outputdir']))
     return dict(remote_outputdir=out)
+
+def create_stdout_file( args ):
+    """ Creates an stdout file in the specified working directory.
+    working_dir: working directory
+    ---
+    outfile: stdout file name
+    """
+    working_dir = args['working_dir'] if 'working_dir' in args else os.getcwd()
+    STDOUT_FILE = os.path.join(working_dir,'hubshed.run.out')
+    with open(STDOUT_FILE,'w') as f:
+        f.write('')
+    return STDOUT_FILE
