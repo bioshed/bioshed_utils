@@ -46,7 +46,7 @@ def run_container_local( args ):
     # add local output volume if specified (local output needs to be full path)
     if 'out::/' in pargs:
         local_outdir = pargs[int(pargs.index('out::/')+5):].split(' ')[0]
-        dockerargs += '-v {}:/huboutput/ '.format(local_outdir)
+        dockerargs += '-v {}:/output/ '.format(local_outdir)
 
     pullcmd = f'docker pull {container_registry}/{cname}:{ctag}'
     pullcmd = 'sudo '+pullcmd if need_sudo.lower()[0]=='y' else pullcmd
@@ -260,6 +260,20 @@ def translate_command_to_docker( args ):
         docker_commands.append('RUN {}'.format(cmd))
     args_out['docker_commands'] = docker_commands
     return args_out
+
+def specify_output_dir( args ):
+    """ Specify a program output directory if not provided.
+
+    program_args: list of arguments
+    default_dir: default directory if output dir is not provided
+    """
+    default_dir = args['default_dir'] if 'default_dir' in args else ''
+    pargs = quick_utils.format_type(args['program_args'], 'space-str')
+    if 'out::' not in pargs and default_dir != '':
+        pargs.strip()+' out::/'+default_dir.lstrip('/')
+        return quick_utils.format_type(pargs, 'list')
+    else:
+        return args['program_args']
 
 ###########################################################
 

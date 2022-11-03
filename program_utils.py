@@ -21,8 +21,8 @@ def init_program( args ):
     [TODO] currently a hack-fix for checking pargs passed in - make cleaner
     """
     cwd = os.getcwd()
-    inputdir = os.path.join(cwd,'hubinput/')
-    outputdir = os.path.join(cwd,'huboutput/')
+    inputdir = os.path.join(cwd,'input/')
+    outputdir = os.path.join(cwd,'output/')
     if not os.path.exists(inputdir):
         os.mkdir(inputdir)
     if not os.path.exists(outputdir):
@@ -91,7 +91,7 @@ def get_alternate_inputs( args ):
     alt_inputs: space-separated string of alternate input files
     """
     pargs = quick_utils.args_to_list( args['program_args'], ' ')
-    localdir = args['localdir'] if 'localdir' in args else '/hubinput/'
+    localdir = args['localdir'] if 'localdir' in args else '/input/'
     alt_files = ''
     for parg in pargs:
         if parg.startswith('alt::'):
