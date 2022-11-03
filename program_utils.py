@@ -45,7 +45,7 @@ def init_program( args ):
     for parg in pargs:
         if not parg.startswith('out::') and not parg.startswith('arg://') and parg.strip(' ')!='//':
             pargs_formatted.append(parg)
-        elif parg.strip(' ')=='&&' and pargs_formatted != []:
+        elif parg.strip(' ')=='//' and pargs_formatted != []:
             # user passed multiple commands
             print('NOTE: You specified multiple commands.')
             pargs_all.append(' '.join(pargs_formatted) )
