@@ -267,7 +267,7 @@ def specify_output_dir( args ):
     program_args: list of arguments
     default_dir: default directory if output dir is not provided
     """
-    default_dir = args['default_dir'] if 'default_dir' in args else ''
+    default_dir = str(args['default_dir']) if 'default_dir' in args else ''
     pargs = quick_utils.format_type(args['program_args'], 'space-str')
     if 'out::' not in pargs and 's3://' not in pargs and 'gcp://' not in pargs and default_dir != '':
         pargs = pargs.strip()+' out::/'+default_dir.lstrip('/')
