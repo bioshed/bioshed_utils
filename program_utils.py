@@ -157,7 +157,7 @@ def run_program( args ):
         if len(cmd.split(' ')) <= 1:
             subprocess.call(cmd+' --help', shell=True)
         if printfile != '':
-            subprocess.call('cat {} >> {}'.format(logfile, printfile))
+            subprocess.call('cat {} >> {}'.format(logfile, printfile), shell=True)
         return
     except:
         print('Error in running program: '+str(cmd))
