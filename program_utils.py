@@ -28,7 +28,6 @@ def init_program( args ):
     if not os.path.exists(outputdir):
         os.mkdir(outputdir)
     pargs_passed_in = args['program_args']
-    print('Program arguments passed in: {}'.format(str(pargs_passed_in)))
     if type(pargs_passed_in)==type([]) and len(pargs_passed_in)==1:
         # program arguments passed in as a single-entry list (by Batch)
         pargs_passed_in = pargs_passed_in[0]
