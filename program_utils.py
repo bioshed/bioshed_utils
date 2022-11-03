@@ -28,6 +28,7 @@ def init_program( args ):
     if not os.path.exists(outputdir):
         os.mkdir(outputdir)
     pargs_passed_in = args['program_args']
+    print('Program arguments passed in: {}'.format(str(pargs_passed_in)))
     if type(pargs_passed_in)==type([]) and len(pargs_passed_in)==1:
         # program arguments passed in as a single-entry list (by Batch)
         pargs_passed_in = pargs_passed_in[0]
@@ -55,7 +56,7 @@ def init_program( args ):
     remote_outputdir = get_remote_outputdir( dict(program_args=pargs))
     alt_inputs = get_alternate_inputs( dict(program_args=pargs, localdir=inputdir))
 
-    print('Raw program arguments: {}'.format(str(pargs_all)))
+    print('Raw program arguments before download: {}'.format(str(pargs_all)))
     params = {}
     params['workingdir'] = cwd.rstrip('/')+'/'
     params['inputdir'] = inputdir
