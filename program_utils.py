@@ -206,7 +206,7 @@ def create_stdout_file( args ):
     outfile: stdout file name
     """
     working_dir = args['working_dir'] if 'working_dir' in args else os.getcwd()
-    STDOUT_FILE = os.path.join(working_dir,'hubshed.run.out')
+    STDOUT_FILE = os.path.join(working_dir,'bioshed.run.out')
     with open(STDOUT_FILE,'w') as f:
         f.write('')
     return STDOUT_FILE
