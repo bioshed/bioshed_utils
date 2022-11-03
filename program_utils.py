@@ -23,8 +23,10 @@ def init_program( args ):
     cwd = os.getcwd()
     inputdir = os.path.join(cwd,'hubinput/')
     outputdir = os.path.join(cwd,'huboutput/')
-    os.mkdir(inputdir)
-    os.mkdir(outputdir)
+    if not os.path.exists(inputdir):
+        os.mkdir(inputdir)
+    if not os.path.exists(outputdir):
+        os.mkdir(outputdir)
     pargs_passed_in = args['program_args']
     if type(pargs_passed_in)==type([]) and len(pargs_passed_in)==1:
         # program arguments passed in as a single-entry list (by Batch)

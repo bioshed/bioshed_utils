@@ -27,6 +27,8 @@ def run_container_local( args ):
     >>> run_container_local( dict(name='test'))
     'sudo docker run test:latest '
 
+    [TODO] figure out a way to not need a full path (/home/...) for local input/output paths
+    [TODO] add docker installation to "pip install bioshed"
     """
     AWS_CONFIG = quick_utils.loadJSON(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
                  if os.path.exists(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
@@ -40,6 +42,11 @@ def run_container_local( args ):
     need_sudo = args['need_sudo'] if 'need_sudo' in args else 'y'
     dockerargs = str(args['dockerargs']).strip()+' ' if 'dockerargs' in args else ''
     container_registry = str(CONTAINER_REGISTRY_URL).rstrip('/')
+
+    # add local output volume if specified (local output needs to be full path)
+    if 'out::/' in pargs:
+        local_outdir = pargs[int(pargs.index('out::/')+5):].split(' ')[0]
+        dockerargs += '-v {}:/huboutput/ '.format(local_outdir)
 
     pullcmd = f'docker pull {container_registry}/{cname}:{ctag}'
     pullcmd = 'sudo '+pullcmd if need_sudo.lower()[0]=='y' else pullcmd
