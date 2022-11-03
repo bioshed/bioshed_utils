@@ -44,7 +44,7 @@ def run_container_local( args ):
     container_registry = str(CONTAINER_REGISTRY_URL).rstrip('/')
 
     # add local output volume if specified (local output needs to be full path)
-    if 'out::/' in pargs:
+    if 'out::/' in pargs and ':/output/' not in dockerargs:
         local_outdir = pargs[int(pargs.index('out::/')+5):].split(' ')[0]
         dockerargs += '-v {}:/output/ '.format(local_outdir)
 

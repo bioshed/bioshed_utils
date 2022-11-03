@@ -192,7 +192,11 @@ def upload_output( args ):
     ---
     remote_outputdir: ...
     """
-    out = aws_s3_utils.upload_folder_s3( dict(localfolder=args['local_outputdir'], path=args['remote_outputdir']))
+    out = ''
+    local_outputdir = args['local_outputdir']
+    remote_outputdir = args['remote_outputdir'] if 'remote_outputdir' in args else ''
+    if 's3://' in remote_outputdir:
+        out = aws_s3_utils.upload_folder_s3( dict(localfolder=local_outputdir, path=remote_outputdir))
     return dict(remote_outputdir=out)
 
 def create_stdout_file( args ):
