@@ -15,6 +15,7 @@ UTILS = ['program_utils.py', 'file_utils.py', 'aws_s3_utils.py', 'quick_utils.py
 def run_container_local( args ):
     """ Runs a container on the local system (docker run)
     name: name of container
+    registry (optional): external public registry, if not using Bioshed registry
     tag: (optional) tag of container image
     args: program arguments
     need_sudo: (optional)
@@ -33,11 +34,12 @@ def run_container_local( args ):
     AWS_CONFIG = quick_utils.loadJSON(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
                  if os.path.exists(os.path.join(HOME_PATH,'.bioshedinit/','aws_config_constants.json')) \
                  else quick_utils.loadJSON(os.path.join(SCRIPT_DIR,'aws_config_constants.json'))
-    CONTAINER_REGISTRY_URL = AWS_CONFIG['ecr_registry'] if 'ecr_registry' in AWS_CONFIG else DEFAULT_REGISTRY
+    CONTAINER_REGISTRY_URL = args['registry'] if 'registry' in args and args['registry'] != '' else \
+                             (AWS_CONFIG['ecr_registry'] if 'ecr_registry' in AWS_CONFIG else DEFAULT_REGISTRY)
 
     # sudo docker run test:latest
     cname = args['name']
-    ctag = args['tag'] if 'tag' in args else 'latest'
+    ctag = args['tag'] if 'tag' in args and args['tag'] != '' else 'latest'
     pargs = quick_utils.format_type(args['args'], 'string_space') if 'args' in args else ''
     need_sudo = args['need_sudo'] if 'need_sudo' in args else 'y'
     dockerargs = str(args['dockerargs']).strip()+' ' if 'dockerargs' in args else ''
