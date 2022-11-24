@@ -191,3 +191,8 @@ def file_exists( f ):
         return True
     else:
         return False
+
+def quick_format( s ):
+    """ Removes dashes/underscores/spaces and returns lowercase
+    """
+    return s.strip().replace('-','').replace('_','').lower()
