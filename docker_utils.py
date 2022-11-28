@@ -271,8 +271,12 @@ def specify_output_dir( args ):
     """
     default_dir = str(args['default_dir']) if 'default_dir' in args else ''
     pargs = quick_utils.format_type(args['program_args'], 'space-str')
-    if (('out::' not in pargs and 's3://' not in pargs and 'gcp://' not in pargs) or 'out::local' in pargs) and default_dir != '':
+    if ('out::' not in pargs and 's3://' not in pargs and 'gcp://' not in pargs) and default_dir != '':
         pargs = pargs.strip()+' out::/'+default_dir.lstrip('/')
+        return quick_utils.format_type(pargs, 'list')
+    elif 'out::local' in pargs and default_dir != '':
+        newout = 'out::/'+default_dir.lstrip('/')
+        pargs = pargs.strip().replace('out::local', newout)
         return quick_utils.format_type(pargs, 'list')
     else:
         return args['program_args']
