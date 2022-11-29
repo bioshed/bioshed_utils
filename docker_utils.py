@@ -1,4 +1,5 @@
 import sys, os, yaml, json, subprocess
+import boto3
 from pathlib import Path
 SCRIPT_DIR = str(os.path.dirname(os.path.realpath(__file__)))
 
@@ -371,3 +372,27 @@ def write_dockerfile_R( args ):
         f.write('ENV PATH="/usr/local/bin/:$PATH"\n')
         f.write('ENTRYPOINT ["python3", "/run_main.py"]\n')
     return dict(dockerfile=dockerfile_name)
+
+def list_modules():
+    """ List all current applications for BioShed Run
+    """
+    return list_containers()
+
+def list_containers():
+    """ List all containers in BioShed public ECR
+
+    ---
+    containers: dictionary of {'reponame': 'repoUri'...}
+    """
+    REPO_REGISTRY_ID = '700080227344'
+    containers = {}
+    client = boto3.client('ecr-public', region_name='us-east-1')
+    next_token = 'first'
+    while next_token != '':
+        metadata = client.describe_repositories( registryId=REPO_REGISTRY_ID, maxResults=1000 ) if next_token == 'first' else \
+                   client.describe_repositories( registryId=REPO_REGISTRY_ID, maxResults=1000, nextToken=next_token )
+        repos = metadata['repositories']
+        for repo in repos:
+            containers[repo['repositoryName']] = repo['repositoryUri']
+        next_token = metadata['nextToken'] if 'nextToken' in metadata else ''
+    return containers
