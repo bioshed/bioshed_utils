@@ -13,6 +13,8 @@ HOME_PATH = os.path.expanduser('~')
 DEFAULT_REGISTRY = "public.ecr.aws/w7q0j5w1"
 UTILS = ['program_utils.py', 'file_utils.py', 'aws_s3_utils.py', 'quick_utils.py', 'aws_config_constants.json', 'specs.json']
 
+CONTAINERS_STATIC = {'cellranger': 'public.ecr.aws/w7q0j5w1/cellranger', 'gzip': 'public.ecr.aws/w7q0j5w1/gzip', 'cutadapt': 'public.ecr.aws/w7q0j5w1/cutadapt', 'deseq2': 'public.ecr.aws/w7q0j5w1/deseq2', 'fastqc': 'public.ecr.aws/w7q0j5w1/fastqc', 'seurat': 'public.ecr.aws/w7q0j5w1/seurat', 'varscan2': 'public.ecr.aws/w7q0j5w1/varscan2', 'bwa': 'public.ecr.aws/w7q0j5w1/bwa', 'cp': 'public.ecr.aws/w7q0j5w1/cp', 'macs2': 'public.ecr.aws/w7q0j5w1/macs2', 'rnaseqc': 'public.ecr.aws/w7q0j5w1/rnaseqc', 'samtools': 'public.ecr.aws/w7q0j5w1/samtools', 'gatk': 'public.ecr.aws/w7q0j5w1/gatk', 'cat': 'public.ecr.aws/w7q0j5w1/cat', 'tar': 'public.ecr.aws/w7q0j5w1/tar', 'zcat': 'public.ecr.aws/w7q0j5w1/zcat', 'qorts': 'public.ecr.aws/w7q0j5w1/qorts', 'mpileup': 'public.ecr.aws/w7q0j5w1/mpileup', 'ls': 'public.ecr.aws/w7q0j5w1/ls', 'featurecounts': 'public.ecr.aws/w7q0j5w1/featurecounts', 'bcftools': 'public.ecr.aws/w7q0j5w1/bcftools', 'bcl2fastq': 'public.ecr.aws/w7q0j5w1/bcl2fastq', 'bedtools': 'public.ecr.aws/w7q0j5w1/bedtools', 'bowtie2': 'public.ecr.aws/w7q0j5w1/bowtie2', 'gunzip': 'public.ecr.aws/w7q0j5w1/gunzip', 'star': 'public.ecr.aws/w7q0j5w1/star', 'echo': 'public.ecr.aws/w7q0j5w1/echo', 'seqtk': 'public.ecr.aws/w7q0j5w1/seqtk'}
+
 def run_container_local( args ):
     """ Runs a container on the local system (docker run)
     name: name of container
@@ -385,14 +387,18 @@ def list_containers():
     containers: dictionary of {'reponame': 'repoUri'...}
     """
     REPO_REGISTRY_ID = '700080227344'
-    containers = {}
-    client = boto3.client('ecr-public', region_name='us-east-1')
-    next_token = 'first'
-    while next_token != '':
-        metadata = client.describe_repositories( registryId=REPO_REGISTRY_ID, maxResults=1000 ) if next_token == 'first' else \
-                   client.describe_repositories( registryId=REPO_REGISTRY_ID, maxResults=1000, nextToken=next_token )
-        repos = metadata['repositories']
-        for repo in repos:
-            containers[repo['repositoryName']] = repo['repositoryUri']
-        next_token = metadata['nextToken'] if 'nextToken' in metadata else ''
+    if quick_utils.cloud_initialized(dict(cloud='aws')):
+        containers = {}
+        client = boto3.client('ecr-public', region_name='us-east-1')
+        next_token = 'first'
+        while next_token != '':
+            metadata = client.describe_repositories( registryId=REPO_REGISTRY_ID, maxResults=1000 ) if next_token == 'first' else \
+                    client.describe_repositories( registryId=REPO_REGISTRY_ID, maxResults=1000, nextToken=next_token )
+            repos = metadata['repositories']
+            for repo in repos:
+                containers[repo['repositoryName']] = repo['repositoryUri']
+            next_token = metadata['nextToken'] if 'nextToken' in metadata else ''
+    else:
+        # I might forget to update this
+        containers = CONTAINERS_STATIC
     return containers
