@@ -196,3 +196,22 @@ def quick_format( s ):
     """ Removes dashes/underscores/spaces and returns lowercase
     """
     return s.strip().replace('-','').replace('_','').lower()
+
+def cloud_initialized( args ):
+    """ Checks if a cloud provider is initialized on the local system
+
+    cloud: which cloud provider to check. If empty, then check all.
+    ---
+    boolean: True/False if cloud is initialized or not
+    """
+    cloud = args['cloud'] if 'cloud' in args else 'all'
+    pnum = 127
+    if cloud in ['aws','amazon','all']:
+        pnum = min(int(subprocess.call('aws s3 ls', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)), pnum)
+    if cloud in ['gcp','all']:
+        pnum = min(int(subprocess.call('gcp --help', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)), pnum)
+
+    if pnum > 3:
+        return False
+    else:
+        return True

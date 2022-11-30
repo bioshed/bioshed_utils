@@ -7,17 +7,18 @@ import quick_utils
 
 HOME_PATH = os.path.expanduser('~')
 
-# initialize S3 access
-if os.environ.get('AWS_ACCESS_KEY_ID') not in [None, ''] and os.environ.get('AWS_SECRET_ACCESS_KEY') not in [None, ''] and os.environ.get('HOME') not in [None, '']:
-    if not os.path.exists(os.path.join(str(os.environ.get('HOME')), '.aws/')):
-        os.mkdir(os.path.join(str(os.environ.get('HOME')), '.aws/'))
-    if not os.path.exists(os.path.join(str(os.environ.get('HOME')), '.aws/credentials')):
-        with open(os.path.join(str(os.environ.get('HOME')), '.aws/credentials'),'w') as f:
-            f.write('[default]\naws_access_key_id = {}\naws_secret_access_key = {}\n'.format(str(os.environ.get('AWS_ACCESS_KEY_ID')), str(os.environ.get('AWS_SECRET_ACCESS_KEY'))))
+if quick_utils.cloud_initialized( dict(cloud='aws')):
+    # initialize S3 access
+    if os.environ.get('AWS_ACCESS_KEY_ID') not in [None, ''] and os.environ.get('AWS_SECRET_ACCESS_KEY') not in [None, ''] and os.environ.get('HOME') not in [None, '']:
+        if not os.path.exists(os.path.join(str(os.environ.get('HOME')), '.aws/')):
+            os.mkdir(os.path.join(str(os.environ.get('HOME')), '.aws/'))
+        if not os.path.exists(os.path.join(str(os.environ.get('HOME')), '.aws/credentials')):
+            with open(os.path.join(str(os.environ.get('HOME')), '.aws/credentials'),'w') as f:
+                f.write('[default]\naws_access_key_id = {}\naws_secret_access_key = {}\n'.format(str(os.environ.get('AWS_ACCESS_KEY_ID')), str(os.environ.get('AWS_SECRET_ACCESS_KEY'))))
 
 s3 = boto3.resource('s3')
 s3_client = boto3.client('s3')
-
+    
 def _findMatches(f, patterns, matchAll = False):
     """ Wrapper for _findMatch to search for multiple patterns. If matchAll is True, must match all patterns.
     f: file name, e.g. 'hello.txt', STR
