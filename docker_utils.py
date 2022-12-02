@@ -22,6 +22,7 @@ def run_container_local( args ):
     tag: (optional) tag of container image
     args: program arguments
     need_sudo: (optional)
+    need_user: (optional, STR - USER NAME): sudo -u <USER> is required
     dockerargs: arguments to docker run (optional)
     ---
     status: status code
@@ -45,8 +46,12 @@ def run_container_local( args ):
     ctag = args['tag'] if 'tag' in args and args['tag'] != '' else 'latest'
     pargs = quick_utils.format_type(args['args'], 'string_space') if 'args' in args else ''
     need_sudo = args['need_sudo'] if 'need_sudo' in args else 'y'
+    need_user = args['need_user'] if 'need_user' in args else ''
     dockerargs = str(args['dockerargs']).strip()+' ' if 'dockerargs' in args else ''
     container_registry = str(CONTAINER_REGISTRY_URL).rstrip('/')
+
+    # add user if docker run requires a specific user privilege
+    sudo_command = 'sudo -u {} '.format(str(need_user)) if need_user!='' else 'sudo '
 
     # add local output volume if specified (local output needs to be full path)
     if 'out::/' in pargs and ':/output/' not in dockerargs:
@@ -58,7 +63,7 @@ def run_container_local( args ):
     subprocess.call(pullcmd, shell=True)
 
     cmd = f'docker run {dockerargs}{container_registry}/{cname}:{ctag} {pargs}'
-    cmd = 'sudo '+cmd if need_sudo.lower()[0]=='y' else cmd
+    cmd = sudo_command+cmd if need_sudo.lower()[0]=='y' else cmd
     subprocess.call(cmd, shell=True)
     return cmd
 
