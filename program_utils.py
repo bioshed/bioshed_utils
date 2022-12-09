@@ -55,6 +55,11 @@ def init_program( args ):
     remote_outputdir = get_remote_outputdir( dict(program_args=pargs))
     alt_inputs = get_alternate_inputs( dict(program_args=pargs, localdir=inputdir))
 
+    # create symbolic links of all files within input directory
+    for ifile in os.listdir(inputdir):
+        if not os.path.exists(os.path.join(cwd,ifile)):
+            os.symlink(os.path.join(inputdir,ifile),os.path.join(cwd,ifile))
+    
     print('Raw program arguments before download: {}'.format(str(pargs_all)))
     params = {}
     params['workingdir'] = cwd.rstrip('/')+'/'

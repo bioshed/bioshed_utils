@@ -20,5 +20,6 @@ COPY quick_utils.py /
 COPY aws_config_constants.json /
 COPY specs.json /
 COPY run_main.py /
+COPY example.txt /
 ENV PATH="/usr/local/bin/:$PATH"
 ENTRYPOINT ["python", "/run_main.py"]
