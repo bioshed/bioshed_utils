@@ -11,6 +11,7 @@ ENV PATH="/gatk-4.1.8.1/:$PATH"
 RUN mkdir /samtools
 ENV PATH="/samtools/:$PATH"
 COPY samtools/bin/* /samtools/
+RUN conda install -c  cyclus java-jre
 WORKDIR /
 COPY program_utils.py /
 COPY file_utils.py /
